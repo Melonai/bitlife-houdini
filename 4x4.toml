@@ -1,0 +1,18 @@
+# prison layout #4 - 5x4
+[people]
+guard = [3, 1]
+prisoner = [3, 3]
+
+[room]
+width = 4
+height = 4
+rotation = 0
+exit = [3, 0]
+
+walls = [
+    [[0, 0], [1, 0]],
+    [[0, 1], [1, 1]],
+    [[1, 1], [2, 1]],
+    [[1, 1], [1, 2]],
+    [[2, 1], [2, 2]],
+]
