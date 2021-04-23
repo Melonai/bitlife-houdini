@@ -14,5 +14,12 @@ fn main() {
 
     let solution = solver::solve(puzzle);
 
-    println!("{:?}", solution);
+    if let Some(path) = solution {
+        println!("Path: {:?}", path);
+        println!("Number of moves: {}", path.len());
+        println!("Guide:");
+        input::show_solution(path);
+    } else {
+        println!("Couldn't find a solution.");
+    }
 }
