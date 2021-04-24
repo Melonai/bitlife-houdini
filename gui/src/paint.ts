@@ -28,14 +28,17 @@ const paintSelectedTiles = () => {
             [selectedTile[0] + 1, selectedTile[1]],
             [selectedTile[0] - 1, selectedTile[1]],
             [selectedTile[0], selectedTile[1] + 1],
-            [selectedTile[0], selectedTile[1] - 1]
-        ]
+            [selectedTile[0], selectedTile[1] - 1],
+        ];
 
         const context = Store.the.context;
         for (let tile of highlightedTiles) {
-            if (tile[0] >= 0 && tile[0] < Store.the.width &&
-                tile[1] >= 0 && tile[1] < Store.the.height) {
-
+            if (
+                tile[0] >= 0 &&
+                tile[0] < Store.the.width &&
+                tile[1] >= 0 &&
+                tile[1] < Store.the.height
+            ) {
                 context.lineWidth = 6;
                 if ((tile[0] + tile[1]) % 2 == 0) {
                     context.strokeStyle = "rgb(255, 255, 255)";
@@ -48,9 +51,16 @@ const paintSelectedTiles = () => {
             }
         }
     }
-}
+};
 
-const paintRoundedRectangle = (x: number, y: number, width: number, height: number, radius: number, filled: boolean) => {
+const paintRoundedRectangle = (
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+    filled: boolean,
+) => {
     const context = Store.the.context;
 
     context.beginPath();
@@ -69,7 +79,7 @@ const paintRoundedRectangle = (x: number, y: number, width: number, height: numb
     } else {
         context.stroke();
     }
-}
+};
 
 const paintWalls = () => {
     const context = Store.the.context;
@@ -85,7 +95,7 @@ const paintWalls = () => {
 
         context.moveTo(...corners[0]);
         context.lineTo(...corners[1]);
-        context.stroke()
+        context.stroke();
     }
 };
 

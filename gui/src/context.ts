@@ -1,8 +1,8 @@
-import type {Wall} from "./types";
-import {Store} from "./store";
-import {equal} from "./utils";
-import {getRelatedTile} from "./game";
-import {rerender} from "./paint";
+import type { Wall } from "./types";
+import { Store } from "./store";
+import { equal } from "./utils";
+import { getRelatedTile } from "./game";
+import { rerender } from "./paint";
 
 export const SIZE = 400;
 
@@ -18,7 +18,7 @@ export const makeContext = (canvas: HTMLCanvasElement): CanvasRenderingContext2D
 
     context.scale(scale, scale);
     return context;
-}
+};
 
 export const onClick = (e: MouseEvent) => {
     const tile = getRelatedTile(e.offsetX, e.offsetY);
@@ -44,5 +44,4 @@ export const onClick = (e: MouseEvent) => {
     }
 
     rerender();
-}
-
+};

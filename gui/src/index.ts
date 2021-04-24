@@ -3,7 +3,7 @@ import { makeContext, onClick } from "./context";
 import { Store } from "./store";
 
 const initialize = () => {
-    const canvas = <HTMLCanvasElement> document.getElementById("board");
+    const canvas = <HTMLCanvasElement>document.getElementById("board");
     const context = makeContext(canvas);
 
     Store.create(context);

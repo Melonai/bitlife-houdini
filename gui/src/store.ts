@@ -1,6 +1,6 @@
-import type {Tile, Wall} from "./types";
-import {prepareWall} from "./game";
-import {equal} from "./utils";
+import type { Tile, Wall } from "./types";
+import { prepareWall } from "./game";
+import { equal } from "./utils";
 
 let store: Store = null;
 
@@ -41,7 +41,6 @@ export class Store {
         this.context = context;
     }
 
-
     get state(): AppState {
         return this.currentState;
     }
@@ -53,7 +52,7 @@ export class Store {
     }
 
     get width(): number {
-        this.verifyBoard()
+        this.verifyBoard();
         return this._width;
     }
 
@@ -89,7 +88,7 @@ export class Store {
     }
 
     get walls(): Wall[] {
-        this.verifyBoard()
+        this.verifyBoard();
         return this._walls;
     }
 
