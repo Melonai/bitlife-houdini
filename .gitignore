@@ -1,3 +1,7 @@
 /target
 .idea
-Cargo.lock
+
+gui/node_modules
+gui/.parcel-cache
+gui/dist
+gui/build

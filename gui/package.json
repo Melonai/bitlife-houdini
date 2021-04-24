@@ -1,0 +1,13 @@
+{
+  "name": "bitlife-houdini",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel serve ./assets/index.html",
+    "build": "parcel build ./assets/index.html"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "2.0.0-beta.2",
+    "parcel": "^2.0.0-beta.2"
+  }
+}
