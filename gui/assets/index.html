@@ -8,7 +8,18 @@
 </head>
 <body>
     <div class="app center-content">
-        <div class="container center-content">
+        <form id="board-form">
+            <label>
+                Width
+                <input name="width" type="number" min="3" max="10">
+            </label>
+            <label>
+                Height
+                <input name="height" type="number" min="3" max="10">
+            </label>
+            <button type="submit">Create Board</button>
+        </form>
+        <div id="board-holder" style="display: none;" class="container center-content">
             <canvas id="board"></canvas>
         </div>
     </div>

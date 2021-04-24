@@ -4,17 +4,21 @@ import { equal } from "./utils";
 import { getRelatedTile } from "./game";
 import { rerender } from "./paint";
 
-export const SIZE = 400;
+export const TILE_SIZE = 50;
 
-export const makeContext = (canvas: HTMLCanvasElement): CanvasRenderingContext2D => {
+export const makeContext = (
+    canvas: HTMLCanvasElement,
+    width: number,
+    heigth: number,
+): CanvasRenderingContext2D => {
     const context = canvas.getContext("2d");
 
-    canvas.style.width = SIZE + "px";
-    canvas.style.height = SIZE + "px";
+    canvas.style.width = width * TILE_SIZE + "px";
+    canvas.style.height = heigth * TILE_SIZE + "px";
 
     const scale = window.devicePixelRatio;
-    canvas.width = SIZE * scale;
-    canvas.height = SIZE * scale;
+    canvas.width = width * TILE_SIZE * scale;
+    canvas.height = heigth * TILE_SIZE * scale;
 
     context.scale(scale, scale);
     return context;
@@ -28,16 +32,15 @@ export const onClick = (e: MouseEvent) => {
         Store.the.deselectTile();
 
         if (equal(tile, otherTile)) {
-            // TODO: Set exit tile.
-            return;
-        }
-
-        const wall: Wall = [tile, otherTile];
-
-        if (Store.the.wallExists(wall)) {
-            Store.the.removeWall(wall);
+            Store.the.specialTiles.cycleTile(tile);
         } else {
-            Store.the.addWall(wall);
+            const wall: Wall = [tile, otherTile];
+
+            if (Store.the.wallExists(wall)) {
+                Store.the.removeWall(wall);
+            } else {
+                Store.the.addWall(wall);
+            }
         }
     } else {
         Store.the.selectTile(tile);

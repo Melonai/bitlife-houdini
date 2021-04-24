@@ -1,7 +1,6 @@
 import { Tile, Wall } from "./types";
 import { equal } from "./utils";
-import { Store } from "./store";
-import { SIZE } from "./context";
+import { TILE_SIZE } from "./context";
 
 export const prepareWall = (wall: Wall): Wall => {
     if (equal(wall[0], wall[1])) {
@@ -40,19 +39,12 @@ export const getWallCorners = (wall: Wall): [[number, number], [number, number]]
 };
 
 export const tileToCoordinates = (tile: Tile): [number, number] => {
-    const tileSize = 50;
-    return [tile[0] * tileSize, tile[1] * tileSize];
+    return [tile[0] * TILE_SIZE, tile[1] * TILE_SIZE];
 };
 
 export const getRelatedTile = (x: number, y: number): Tile => {
-    const width = Store.the.width;
-    const height = Store.the.height;
-
-    const tilesHorizontal = SIZE / width;
-    const tilesVertical = SIZE / height;
-
-    const tileX = Math.floor(x / tilesHorizontal);
-    const tileY = Math.floor(y / tilesVertical);
+    const tileX = Math.floor(x / TILE_SIZE);
+    const tileY = Math.floor(y / TILE_SIZE);
 
     return [tileX, tileY];
 };

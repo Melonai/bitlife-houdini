@@ -12,12 +12,13 @@ export enum AppState {
 export class Store {
     private currentState: AppState = AppState.CreatingBoard;
 
-    public context: CanvasRenderingContext2D;
+    private _context: CanvasRenderingContext2D;
 
     private _width: number | null;
     private _height: number | null;
 
     private _selectedTile: Tile | null;
+    private _specialTiles: SpecialTiles | null;
 
     private _walls: Wall[] | null;
 
@@ -29,20 +30,21 @@ export class Store {
         throw new Error("Accessing store before initialization.");
     }
 
-    static create(context: CanvasRenderingContext2D) {
+    static create() {
         if (store === null) {
-            store = new Store(context);
+            store = new Store();
         } else {
             throw new Error("Only one store is allowed to exist.");
         }
     }
 
-    private constructor(context: CanvasRenderingContext2D) {
-        this.context = context;
-    }
-
     get state(): AppState {
         return this.currentState;
+    }
+
+    get context(): CanvasRenderingContext2D {
+        this.verifyBoard();
+        return this._context;
     }
 
     private verifyBoard() {
@@ -74,16 +76,18 @@ export class Store {
         this._selectedTile = null;
     }
 
-    setBoardSize(width: number, height: number) {
+    createBoard(context: CanvasRenderingContext2D, width: number, height: number) {
         if (this.currentState === AppState.CreatingBoard) {
             this._width = width;
             this._height = height;
 
             this._walls = [];
+            this._specialTiles = new SpecialTiles();
+            this._context = context;
 
             this.currentState = AppState.PlacingWalls;
         } else {
-            throw new Error("Already set board size.");
+            throw new Error("Already created Board.");
         }
     }
 
@@ -112,5 +116,44 @@ export class Store {
         if (wallIndex !== -1) {
             this._walls.splice(wallIndex, 1);
         }
+    }
+
+    get specialTiles(): SpecialTiles {
+        this.verifyBoard();
+        return this._specialTiles;
+    }
+}
+
+export enum TileType {
+    Prisoner,
+    Guard,
+    Exit,
+}
+
+class SpecialTiles {
+    public tiles: [Tile, TileType][] = [];
+
+    cycleTile(tile: Tile) {
+        const index = this.tiles.findIndex(([otherTile]) => equal(tile, otherTile));
+
+        if (index !== -1) {
+            const foundTile = this.tiles[index];
+            if (foundTile[1] === TileType.Exit) {
+                this.tiles.splice(index, 1);
+            } else {
+                foundTile[1] += 1;
+            }
+        } else {
+            this.tiles.push([tile, TileType.Prisoner]);
+        }
+    }
+
+    getTileType(tile: Tile): TileType | null {
+        const foundTile = this.tiles.find(([otherTile]) => equal(tile, otherTile));
+
+        if (foundTile) {
+            return foundTile[1];
+        }
+        return null;
     }
 }

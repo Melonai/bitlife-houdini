@@ -1,22 +1,48 @@
-import { Store } from "./store";
+import { Store, TileType } from "./store";
 import { getWallCorners, tileToCoordinates } from "./game";
-import { SIZE } from "./context";
+import { TILE_SIZE } from "./context";
 import { Tile } from "./types";
 
 const paintBoard = () => {
     const context = Store.the.context;
 
     context.fillStyle = "rgb(255, 255, 255)";
-    context.fillRect(0, 0, SIZE, SIZE);
+    context.fillRect(0, 0, Store.the.width * TILE_SIZE, Store.the.height * TILE_SIZE);
 
     context.fillStyle = "rgb(236, 236, 236)";
+
     for (let x = 0; x < Store.the.width; x += 2) {
         for (let y = 0; y < Store.the.height; y++) {
-            context.fillRect((x + (y % 2)) * 50, y * 50, 50, 50);
+            const actualX = x + (y % 2);
+            if (Store.the.specialTiles.getTileType([actualX, y]) !== TileType.Exit) {
+                context.fillRect(actualX * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
         }
     }
+};
 
-    paintSelectedTiles();
+const paintSpecialTiles = () => {
+    const context = Store.the.context;
+
+    for (let specialTile of Store.the.specialTiles.tiles) {
+        const tile = specialTile[0];
+        const coords = tileToCoordinates(tile);
+
+        switch (specialTile[1]) {
+            case TileType.Prisoner:
+                paintPerson(coords[0] + 25, coords[1] + 25, "rgb(255, 145, 111)");
+                break;
+            case TileType.Guard:
+                paintPerson(coords[0] + 25, coords[1] + 25, "rgb(111, 160, 255)");
+                break;
+            case TileType.Exit:
+                context.fillStyle = "rgba(255, 145, 111, 0.25)";
+                paintRoundedRectangle(coords[0] + 7, coords[1] + 7, 36, 36, 14, true);
+                break;
+            default:
+                throw new Error("Unknown tile type.");
+        }
+    }
 };
 
 const paintSelectedTiles = () => {
@@ -51,6 +77,18 @@ const paintSelectedTiles = () => {
             }
         }
     }
+};
+
+const paintPerson = (x: number, y: number, color: string) => {
+    const context = Store.the.context;
+
+    context.beginPath();
+    context.arc(x, y, 15, 0, 2 * Math.PI, false);
+    context.fillStyle = color;
+    context.fill();
+    context.lineWidth = 5;
+    context.strokeStyle = "#FFFFFF";
+    context.stroke();
 };
 
 const paintRoundedRectangle = (
@@ -101,5 +139,7 @@ const paintWalls = () => {
 
 export const rerender = () => {
     paintBoard();
+    paintSelectedTiles();
+    paintSpecialTiles();
     paintWalls();
 };
