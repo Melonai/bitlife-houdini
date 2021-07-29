@@ -3,6 +3,12 @@ use serde::Deserialize;
 pub type Position = (u8, u8);
 
 #[derive(Deserialize, Debug)]
+pub struct Puzzle {
+    pub people: PositionState,
+    pub room: Room,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct Room {
     pub width: u8,
     pub height: u8,
@@ -37,10 +43,10 @@ impl Wall {
     }
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Deserialize, Debug, PartialEq, Eq, Hash)]
 pub struct PositionState {
-    guard: Position,
-    prisoner: Position,
+    pub guard: Position,
+    pub prisoner: Position,
 }
 
 impl PositionState {

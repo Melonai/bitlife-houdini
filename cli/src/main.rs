@@ -1,18 +1,14 @@
-#[macro_use]
-extern crate bitflags;
+extern crate houdini_solver;
 
 use std::fs::File;
 
-mod directions;
 mod input;
-mod objects;
-mod solver;
 
 fn main() {
     let file = File::open("input.toml").unwrap();
     let puzzle = input::parse_file(file).unwrap();
 
-    let solution = solver::solve(puzzle);
+    let solution = houdini_solver::solve(puzzle);
 
     if let Some(path) = solution {
         println!("Path: {:?}", path);

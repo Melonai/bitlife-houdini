@@ -1,6 +1,11 @@
+#[macro_use]
+extern crate bitflags;
+
+mod directions;
+pub mod objects;
+
 use crate::directions::Directions;
-use crate::input::Puzzle;
-use crate::objects::{Position, PositionState, Room};
+use crate::objects::{Position, PositionState, Puzzle, Room};
 use std::collections::HashSet;
 
 pub fn solve(puzzle: Puzzle) -> Option<Vec<Position>> {

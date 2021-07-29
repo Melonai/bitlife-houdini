@@ -1,22 +1,9 @@
 use std::fs::File;
 use std::io::{stdin, stdout, Read, Write};
 
-use serde::Deserialize;
 use toml::de::Error;
 
-use crate::objects::{Position, Room};
-
-#[derive(Deserialize, Debug)]
-pub struct Puzzle {
-    pub people: StartingPositions,
-    pub room: Room,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct StartingPositions {
-    pub guard: Position,
-    pub prisoner: Position,
-}
+use houdini_solver::objects::{Position, Puzzle};
 
 pub fn parse_file(mut file: File) -> Result<Puzzle, Error> {
     let mut content = String::new();
