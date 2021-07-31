@@ -1,2 +1,2 @@
 [workspace]
-members = ["solver", "cli"]
+members = ["solver", "wasm", "cli"]

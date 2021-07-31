@@ -11,7 +11,7 @@ export const makeContext = (
     width: number,
     heigth: number,
 ): CanvasRenderingContext2D => {
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext("2d")!;
 
     canvas.style.width = width * TILE_SIZE + "px";
     canvas.style.height = heigth * TILE_SIZE + "px";

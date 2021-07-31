@@ -2,7 +2,7 @@ import type { Tile, Wall } from "./types";
 import { prepareWall } from "./game";
 import { equal } from "./utils";
 
-let store: Store = null;
+let store: Store | null = null;
 
 export enum AppState {
     CreatingBoard,
@@ -12,15 +12,15 @@ export enum AppState {
 export class Store {
     private currentState: AppState = AppState.CreatingBoard;
 
-    private _context: CanvasRenderingContext2D;
+    private _context: CanvasRenderingContext2D | null = null;
 
-    private _width: number | null;
-    private _height: number | null;
+    private _width: number | null = null;
+    private _height: number | null = null;
 
-    private _selectedTile: Tile | null;
-    private _specialTiles: SpecialTiles | null;
+    private _selectedTile: Tile | null = null;
+    private _specialTiles: SpecialTiles | null = null;
 
-    private _walls: Wall[] | null;
+    private _walls: Wall[] | null = null;
 
     static get the(): Store {
         if (store !== null) {
@@ -44,7 +44,7 @@ export class Store {
 
     get context(): CanvasRenderingContext2D {
         this.verifyBoard();
-        return this._context;
+        return this._context!;
     }
 
     private verifyBoard() {
@@ -55,12 +55,12 @@ export class Store {
 
     get width(): number {
         this.verifyBoard();
-        return this._width;
+        return this._width!;
     }
 
     get height(): number {
         this.verifyBoard();
-        return this._height;
+        return this._height!;
     }
 
     get selectedTile(): Tile | null {
@@ -93,34 +93,34 @@ export class Store {
 
     get walls(): Wall[] {
         this.verifyBoard();
-        return this._walls;
+        return this._walls!;
     }
 
     wallExists(wall: Wall): boolean {
         this.verifyBoard();
         const wallToFind = prepareWall(wall);
-        return this._walls.some(otherWall => equal(wallToFind, otherWall));
+        return this.walls.some(otherWall => equal(wallToFind, otherWall));
     }
 
     addWall(wall: Wall) {
         this.verifyBoard();
         const newWall = prepareWall(wall);
-        this._walls.push(newWall);
+        this.walls.push(newWall);
     }
 
     removeWall(wall: Wall) {
         this.verifyBoard();
         const wallToRemove = prepareWall(wall);
-        const wallIndex = this._walls.findIndex(wall => equal(wall, wallToRemove));
+        const wallIndex = this.walls.findIndex(wall => equal(wall, wallToRemove));
 
         if (wallIndex !== -1) {
-            this._walls.splice(wallIndex, 1);
+            this.walls.splice(wallIndex, 1);
         }
     }
 
     get specialTiles(): SpecialTiles {
         this.verifyBoard();
-        return this._specialTiles;
+        return this._specialTiles!;
     }
 }
 

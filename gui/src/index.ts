@@ -1,9 +1,15 @@
+import "../assets/index.scss";
+
 import { rerender } from "./paint";
 import { makeContext, onClick } from "./context";
 import { Store } from "./store";
 
 const initialize = () => {
     Store.create();
+
+    import("../../wasm/pkg").then((module) => {
+        module.greet();
+    })
 
     const form = <HTMLFormElement>document.getElementById("board-form");
 
@@ -16,7 +22,7 @@ const initialize = () => {
         form.style.display = "none";
 
         const boardHolder = document.getElementById("board-holder");
-        boardHolder.style.display = "";
+        boardHolder!.style.display = "";
 
         const canvas = <HTMLCanvasElement>document.getElementById("board");
         const context = makeContext(canvas, width, height);
