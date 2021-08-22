@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 pub type Position = (u8, u8);
 
@@ -43,7 +43,7 @@ impl Wall {
     }
 }
 
-#[derive(Deserialize, Debug, PartialEq, Eq, Hash)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct PositionState {
     pub guard: Position,
     pub prisoner: Position,

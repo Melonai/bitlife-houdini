@@ -8,9 +8,12 @@ use crate::directions::Directions;
 use crate::objects::{Position, PositionState, Puzzle, Room};
 use std::collections::HashSet;
 
-pub fn solve(puzzle: Puzzle) -> Option<Vec<Position>> {
+pub fn solve(puzzle: Puzzle) -> Option<Vec<PositionState>> {
     let mut path = Vec::new();
-    path.push(puzzle.people.prisoner);
+    path.push(PositionState {
+        guard: puzzle.people.guard,
+        prisoner: puzzle.people.prisoner,
+    });
 
     let mut known_positions = HashSet::new();
     recursively_solve(
@@ -18,7 +21,6 @@ pub fn solve(puzzle: Puzzle) -> Option<Vec<Position>> {
         puzzle.room.exit,
         &mut known_positions,
         &mut path,
-        puzzle.people.guard,
     )
 }
 
@@ -26,10 +28,9 @@ fn recursively_solve(
     room: &Room,
     exit: Position,
     known_positions: &mut HashSet<PositionState>,
-    path: &mut Vec<Position>,
-    guard: Position,
-) -> Option<Vec<Position>> {
-    let prisoner = *path.last().unwrap();
+    path: &mut Vec<PositionState>,
+) -> Option<Vec<PositionState>> {
+    let PositionState { prisoner, guard } = *path.last().unwrap();
 
     if exit == prisoner {
         return Some(path.clone());
@@ -50,8 +51,11 @@ fn recursively_solve(
                 continue;
             }
 
-            path.push(new_prisoner);
-            let result = recursively_solve(room, exit, known_positions, path, new_guard);
+            path.push(PositionState {
+                guard: new_guard,
+                prisoner: new_prisoner,
+            });
+            let result = recursively_solve(room, exit, known_positions, path);
 
             match result {
                 Some(path) => return Some(path),

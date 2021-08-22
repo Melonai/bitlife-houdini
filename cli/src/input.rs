@@ -3,7 +3,7 @@ use std::io::{stdin, stdout, Read, Write};
 
 use toml::de::Error;
 
-use houdini_solver::objects::{Position, Puzzle};
+use houdini_solver::objects::{PositionState, Puzzle};
 
 pub fn parse_file(mut file: File) -> Result<Puzzle, Error> {
     let mut content = String::new();
@@ -11,11 +11,11 @@ pub fn parse_file(mut file: File) -> Result<Puzzle, Error> {
     toml::from_str(content.as_str())
 }
 
-pub fn show_solution(mut path: Vec<Position>) {
-    let mut last_position = path.remove(0);
+pub fn show_solution(mut path: Vec<PositionState>) {
+    let mut last_position = path.remove(0).prisoner;
 
     while !path.is_empty() {
-        let new_position = path.remove(0);
+        let new_position = path.remove(0).prisoner;
 
         if new_position.0 as i8 - last_position.0 as i8 == -1 {
             print!("Left");
