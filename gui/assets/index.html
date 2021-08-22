@@ -7,7 +7,7 @@
 </head>
 <body>
     <div class="app center-content">
-        <form id="board-form">
+        <form class="initializing-board" id="board-form">
             <label>
                 Width
                 <input name="width" type="number" min="3" max="10">
@@ -18,7 +18,7 @@
             </label>
             <button type="submit">Create Board</button>
         </form>
-        <div id="board-holder" style="display: none;" class="container center-content">
+        <div class="placing-objects showing-solution container center-content" id="board-holder">
             <canvas id="board"></canvas>
         </div>
     </div>
