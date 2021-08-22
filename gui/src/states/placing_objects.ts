@@ -18,12 +18,17 @@ export class PlacingObjectsState {
         const canvas = <HTMLCanvasElement>document.getElementById("board");
         canvas.addEventListener("click", e => this.onCanvasClick(e));
 
-        // TODO: Remove event listener when state is changed.
+        // TODO: Remove event listeners when state is changed.
         document.addEventListener("keyup", e => {
             e.preventDefault();
             if (e.key === "Enter") {
                 this.onEnter();
             }
+        });
+
+        const exportButton = document.getElementById("export-puzzle-button")!;
+        exportButton.addEventListener("click", () => {
+            this.exportPuzzle();
         });
 
         this.painter = new Painter(canvas, board.width, board.height);
@@ -73,5 +78,10 @@ export class PlacingObjectsState {
         this.board.solve().then(solution => {
             switchState(new ShowingSolutionState(this.board, this.painter, solution));
         });
+    }
+
+    private exportPuzzle() {
+        const puzzleString = JSON.stringify(boardToPuzzle(this.board));
+        navigator.clipboard.writeText(puzzleString);
     }
 }
