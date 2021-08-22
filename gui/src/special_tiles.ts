@@ -8,7 +8,7 @@ export enum TileType {
 }
 
 export class SpecialTiles {
-    readonly tiles: [Tile, TileType][] = [];
+    tiles: [Tile, TileType][] = [];
 
     cycleTile(tile: Tile) {
         const index = this.tiles.findIndex(([otherTile]) => equal(tile, otherTile));
@@ -25,6 +25,16 @@ export class SpecialTiles {
         }
     }
 
+    setTile(tile: Tile, tileType: TileType) {
+        const index = this.tiles.findIndex(([otherTile]) => equal(tile, otherTile));
+
+        if (index !== -1) {
+            this.tiles[index][1] = tileType;
+        } else {
+            this.tiles.push([tile, tileType]);
+        }
+    }
+
     getTileType(tile: Tile): TileType | null {
         const foundTile = this.tiles.find(([otherTile]) => equal(tile, otherTile));
 
@@ -32,5 +42,15 @@ export class SpecialTiles {
             return foundTile[1];
         }
         return null;
+    }
+
+    findTileOfType(tileType: TileType): Tile | null {
+        const foundTile = this.tiles.find(([, type]) => type === tileType);
+
+        if (foundTile) {
+            return foundTile[0];
+        } else {
+            return null;
+        }
     }
 }

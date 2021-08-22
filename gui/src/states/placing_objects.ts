@@ -1,8 +1,9 @@
 import { Board } from "../board";
 import { Painter } from "../painter";
-import { StateType } from "../state";
+import { StateType, switchState } from "../state";
 import { Tile, Wall } from "../types";
 import { equal } from "../utils";
+import { ShowingSolutionState } from "./showing_solution";
 
 export class PlacingObjectsState {
     readonly type: StateType = StateType.PlacingObjects;
@@ -16,6 +17,14 @@ export class PlacingObjectsState {
     constructor(board: Board) {
         const canvas = <HTMLCanvasElement>document.getElementById("board");
         canvas.addEventListener("click", e => this.onCanvasClick(e));
+
+        // TODO: Remove event listener when state is changed.
+        document.addEventListener("keyup", e => {
+            e.preventDefault();
+            if (e.key === "Enter") {
+                this.onEnter();
+            }
+        });
 
         this.painter = new Painter(canvas, board.width, board.height);
         this.painter.paint(null, board);
@@ -58,5 +67,11 @@ export class PlacingObjectsState {
         }
 
         this.painter.paint(this.selectedTile, this.board);
+    }
+
+    private onEnter() {
+        this.board.solve().then(solution => {
+            switchState(new ShowingSolutionState(this.board, this.painter, solution));
+        });
     }
 }

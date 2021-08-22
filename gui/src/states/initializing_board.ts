@@ -8,6 +8,7 @@ export class InitializingBoardState {
     constructor() {
         const form = <HTMLFormElement>document.getElementById("board-form");
 
+        // TODO: Remove event listener when state is changed.
         form.addEventListener("submit", e => this.onInitializeBoardFormSubmit(e));
     }
 
