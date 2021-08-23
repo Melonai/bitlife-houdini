@@ -1,8 +1,10 @@
-import { Board } from "../board";
+import { Board, Tile } from "../board";
+import { puzzles } from "../existing_puzzles";
 import { Painter } from "../painter";
+import { boardToPuzzle, isPuzzleSubsetOfAnother, Puzzle, rotatePuzzle } from "../puzzle";
 import { StateType, switchState } from "../state";
-import { Tile, Wall } from "../types";
 import { equal } from "../utils";
+import { createWall } from "../wall";
 import { ShowingSolutionState } from "./showing_solution";
 
 export class PlacingObjectsState {
@@ -13,6 +15,7 @@ export class PlacingObjectsState {
     private selectedTile: Tile | null = null;
 
     private board: Board;
+    private applicableExistingPuzzles = puzzles;
 
     constructor(board: Board) {
         const canvas = <HTMLCanvasElement>document.getElementById("board");
@@ -46,24 +49,16 @@ export class PlacingObjectsState {
 
             if (equal(clickedTile, selectedTile)) {
                 this.board.specialTiles.cycleTile(clickedTile);
+                this.narrowApplicableExistingPuzzles(puzzles);
             } else {
-                let wall: Wall;
-
-                // Make sure the wall isn't placed on the same tile
-                if (equal(clickedTile, selectedTile)) {
-                    throw new Error("Wall can't go between the same tile.");
-                }
-
-                // Make sure wall always has the same orientation
-                if (clickedTile[0] <= selectedTile[0] && clickedTile[1] <= selectedTile[1]) {
-                    wall = [clickedTile, selectedTile];
-                } else {
-                    wall = [selectedTile, clickedTile];
-                }
+                const wall = createWall(clickedTile, selectedTile);
 
                 if (this.board.wallExists(wall)) {
                     this.board.removeWall(wall);
+                    // If the wall was removed, we have to restart the list of applicable existing puzzles.
+                    this.narrowApplicableExistingPuzzles(puzzles);
                 } else {
+                    this.narrowApplicableExistingPuzzles(this.applicableExistingPuzzles);
                     this.board.addWall(wall);
                 }
             }
@@ -72,6 +67,23 @@ export class PlacingObjectsState {
         }
 
         this.painter.paint(this.selectedTile, this.board);
+    }
+
+    private narrowApplicableExistingPuzzles(existingPuzzles: Puzzle[]) {
+        const puzzle1 = boardToPuzzle(this.board);
+        const puzzle2 = rotatePuzzle(puzzle1, 1);
+        const puzzle3 = rotatePuzzle(puzzle1, 2);
+        const puzzle4 = rotatePuzzle(puzzle1, 3);
+
+        const givenPuzzles = [puzzle1, puzzle2, puzzle3, puzzle4];
+
+        this.applicableExistingPuzzles = existingPuzzles.filter(existingPuzzle => {
+            return givenPuzzles.some(givenPuzzle =>
+                isPuzzleSubsetOfAnother(givenPuzzle, existingPuzzle),
+            );
+        });
+
+        console.log(this.applicableExistingPuzzles.length, "puzzles found.");
     }
 
     private onEnter() {

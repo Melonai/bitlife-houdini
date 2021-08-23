@@ -1,6 +1,6 @@
-import { Board } from "./board";
+import { Board, Tile } from "./board";
 import { SpecialTiles, TileType } from "./special_tiles";
-import { Tile, Wall } from "./types";
+import { Wall } from "./wall";
 
 export const TILE_SIZE = 50;
 

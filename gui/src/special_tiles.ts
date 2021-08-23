@@ -1,4 +1,4 @@
-import { Tile } from "./types";
+import { Tile } from "./board";
 import { equal } from "./utils";
 
 export enum TileType {
