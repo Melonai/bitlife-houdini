@@ -1,7 +1,13 @@
 import { Board, Tile } from "../board";
 import { puzzles } from "../existing_puzzles";
 import { Painter } from "../painter";
-import { boardToPuzzle, isPuzzleSubsetOfAnother, Puzzle, rotatePuzzle } from "../puzzle";
+import {
+    boardToPuzzle,
+    isPuzzleSubsetOfAnother,
+    Puzzle,
+    puzzleToBoard,
+    rotatePuzzle,
+} from "../puzzle";
 import { StateType, switchState } from "../state";
 import { equal } from "../utils";
 import { createWall } from "../wall";
@@ -15,7 +21,6 @@ export class PlacingObjectsState {
     private selectedTile: Tile | null = null;
 
     private board: Board;
-    private applicableExistingPuzzles = puzzles;
 
     constructor(board: Board) {
         const canvas = <HTMLCanvasElement>document.getElementById("board");
@@ -49,19 +54,16 @@ export class PlacingObjectsState {
 
             if (equal(clickedTile, selectedTile)) {
                 this.board.specialTiles.cycleTile(clickedTile);
-                this.narrowApplicableExistingPuzzles(puzzles);
             } else {
                 const wall = createWall(clickedTile, selectedTile);
-
                 if (this.board.wallExists(wall)) {
                     this.board.removeWall(wall);
-                    // If the wall was removed, we have to restart the list of applicable existing puzzles.
-                    this.narrowApplicableExistingPuzzles(puzzles);
                 } else {
-                    this.narrowApplicableExistingPuzzles(this.applicableExistingPuzzles);
                     this.board.addWall(wall);
                 }
             }
+
+            this.narrowApplicableExistingPuzzles(puzzles);
         } else {
             this.selectedTile = clickedTile;
         }
@@ -77,13 +79,33 @@ export class PlacingObjectsState {
 
         const givenPuzzles = [puzzle1, puzzle2, puzzle3, puzzle4];
 
-        this.applicableExistingPuzzles = existingPuzzles.filter(existingPuzzle => {
-            return givenPuzzles.some(givenPuzzle =>
-                isPuzzleSubsetOfAnother(givenPuzzle, existingPuzzle),
-            );
-        });
+        const applicableExistingPuzzles = [];
 
-        console.log(this.applicableExistingPuzzles.length, "puzzles found.");
+        for (const existingPuzzle of existingPuzzles) {
+            for (const [rotation, givenPuzzle] of givenPuzzles.entries()) {
+                if (isPuzzleSubsetOfAnother(givenPuzzle, existingPuzzle)) {
+                    // Rotate the existing puzzle in the opposite direction to the given puzzle, so that they are the same.
+                    applicableExistingPuzzles.push(rotatePuzzle(existingPuzzle, 4 - rotation));
+                }
+            }
+        }
+
+        const messageBox = document.getElementById("found-existing-puzzle-message")!;
+        const button = document.getElementById("found-existing-puzzle-button")!;
+
+        if (applicableExistingPuzzles.length === 1) {
+            const foundPuzzle = applicableExistingPuzzles[0];
+
+            messageBox.classList.remove("hidden");
+            button.onclick = () => {
+                messageBox.classList.add("hidden");
+
+                this.board = puzzleToBoard(foundPuzzle);
+                this.painter.paint(this.selectedTile, this.board);
+            };
+        } else {
+            messageBox.classList.add("hidden");
+        }
     }
 
     private onEnter() {
