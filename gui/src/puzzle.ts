@@ -68,13 +68,21 @@ export function rotatePuzzle(puzzle: Puzzle, rotation: number): Puzzle {
             return tile;
         }
 
-        const horizontalFlip = actualRotation < 3;
-        const verticalFlip = actualRotation > 1;
+        const switchComponents = actualRotation % 2 === 1;
+        const flipX = actualRotation > 1;
+        const flipY = actualRotation > 0 && actualRotation < 3;
 
-        const newX = horizontalFlip ? tile[0] : width - tile[0] - 1;
-        const newY = verticalFlip ? tile[1] : height - tile[1] - 1;
+        let newX = switchComponents ? tile[1] : tile[0];
+        newX = flipX ? width - 1 - newX : newX;
+
+        let newY = switchComponents ? tile[0] : tile[1];
+        newY = flipY ? height - 1 - newY : newY;
+
         return [newX, newY];
     };
+
+    const rotateIfNotFake = (tile: Tile): Tile =>
+        equal(tile, [-1, -1]) ? [-1, -1] : rotateTile(tile);
 
     const rotatedWalls = puzzle.room.walls.map(wall => {
         const normalWall = createWall(rotateTile(wall.from), rotateTile(wall.to));
@@ -86,14 +94,14 @@ export function rotatePuzzle(puzzle: Puzzle, rotation: number): Puzzle {
 
     const newPuzzle: Puzzle = {
         people: {
-            guard: rotateTile(puzzle.people.guard),
-            prisoner: rotateTile(puzzle.people.prisoner),
+            guard: rotateIfNotFake(puzzle.people.guard),
+            prisoner: rotateIfNotFake(puzzle.people.prisoner),
         },
         room: {
             width,
             height,
             rotation: 0,
-            exit: rotateTile(puzzle.room.exit),
+            exit: rotateIfNotFake(puzzle.room.exit),
             walls: rotatedWalls,
         },
     };
