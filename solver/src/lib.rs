@@ -6,7 +6,6 @@ pub mod objects;
 
 use crate::directions::Directions;
 use crate::objects::{Position, PositionState, Puzzle, Room};
-use std::collections::HashSet;
 
 pub fn solve(puzzle: Puzzle) -> Option<Vec<PositionState>> {
     let mut path = Vec::new();
@@ -15,19 +14,12 @@ pub fn solve(puzzle: Puzzle) -> Option<Vec<PositionState>> {
         prisoner: puzzle.people.prisoner,
     });
 
-    let mut known_positions = HashSet::new();
-    recursively_solve(
-        &puzzle.room,
-        puzzle.room.exit,
-        &mut known_positions,
-        &mut path,
-    )
+    recursively_solve(&puzzle.room, puzzle.room.exit, &mut path)
 }
 
 fn recursively_solve(
     room: &Room,
     exit: Position,
-    known_positions: &mut HashSet<PositionState>,
     path: &mut Vec<PositionState>,
 ) -> Option<Vec<PositionState>> {
     let PositionState { prisoner, guard } = *path.last().unwrap();
@@ -36,7 +28,7 @@ fn recursively_solve(
         return Some(path.clone());
     }
 
-    known_positions.insert(PositionState::new(guard, prisoner));
+    let mut current_best_path: Option<Vec<PositionState>> = None;
 
     let moves = get_valid_moves(room, prisoner);
     for i in 0..4 {
@@ -46,7 +38,7 @@ fn recursively_solve(
             let new_guard = move_guard(room, guard, new_prisoner);
 
             if new_prisoner == new_guard
-                || known_positions.contains(&PositionState::new(new_guard, new_prisoner))
+                || path.contains(&PositionState::new(new_guard, new_prisoner))
             {
                 continue;
             }
@@ -55,18 +47,26 @@ fn recursively_solve(
                 guard: new_guard,
                 prisoner: new_prisoner,
             });
-            let result = recursively_solve(room, exit, known_positions, path);
+            let result = recursively_solve(room, exit, path);
 
             match result {
-                Some(path) => return Some(path),
-                None => {
-                    path.pop();
+                Some(found_path) => {
+                    if let Some(best_path) = &current_best_path {
+                        if best_path.len() > found_path.len() {
+                            current_best_path = Some(found_path);
+                        }
+                    } else {
+                        current_best_path = Some(found_path);
+                    }
                 }
+                _ => (),
             }
+
+            path.pop();
         }
     }
 
-    None
+    current_best_path
 }
 
 fn get_valid_moves(room: &Room, from: Position) -> Directions {
