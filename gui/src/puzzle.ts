@@ -5,14 +5,14 @@ import { createWall, Wall } from "./wall";
 
 export type Puzzle = {
     people: {
-        guard: Tile; // Position
-        prisoner: Tile; // Position
+        guard: Tile | null; // Position
+        prisoner: Tile | null; // Position
     }; // PositionState
     room: {
         width: number; // u8
         height: number; // u8
         rotation: 0; // u8
-        exit: Tile; // Position
+        exit: Tile | null; // Position
         walls: {
             from: Tile; // Position
             to: Tile; // Position
@@ -34,14 +34,14 @@ export function boardToPuzzle(board: Board): Puzzle {
 
     return {
         people: {
-            guard: guard || [-1, -1],
-            prisoner: prisoner || [-1, -1],
+            guard,
+            prisoner,
         },
         room: {
             width: board.width,
             height: board.height,
             rotation: 0,
-            exit: exit || [-1, -1],
+            exit,
             walls,
         },
     };
@@ -49,9 +49,15 @@ export function boardToPuzzle(board: Board): Puzzle {
 
 export function puzzleToBoard(puzzle: Puzzle): Board {
     const specialTiles = new SpecialTiles();
-    specialTiles.setTile(puzzle.people.guard, TileType.Guard);
-    specialTiles.setTile(puzzle.people.prisoner, TileType.Prisoner);
-    specialTiles.setTile(puzzle.room.exit, TileType.Exit);
+    if (puzzle.people.guard !== null) {
+        specialTiles.setTile(puzzle.people.guard, TileType.Guard);
+    }
+    if (puzzle.people.prisoner !== null) {
+        specialTiles.setTile(puzzle.people.prisoner, TileType.Prisoner);
+    }
+    if (puzzle.room.exit !== null) {
+        specialTiles.setTile(puzzle.room.exit, TileType.Exit);
+    }
 
     const walls: Wall[] = puzzle.room.walls.map(({ from, to }) => [from, to]);
 
@@ -81,8 +87,12 @@ export function rotatePuzzle(puzzle: Puzzle, rotation: number): Puzzle {
         return [newX, newY];
     };
 
-    const rotateIfNotFake = (tile: Tile): Tile =>
-        equal(tile, [-1, -1]) ? [-1, -1] : rotateTile(tile);
+    const rotateIfNotNull = (tile: Tile | null): Tile | null => {
+        if (tile === null) {
+            return null;
+        }
+        return rotateTile(tile);
+    };
 
     const rotatedWalls = puzzle.room.walls.map(wall => {
         const normalWall = createWall(rotateTile(wall.from), rotateTile(wall.to));
@@ -94,14 +104,14 @@ export function rotatePuzzle(puzzle: Puzzle, rotation: number): Puzzle {
 
     const newPuzzle: Puzzle = {
         people: {
-            guard: rotateIfNotFake(puzzle.people.guard),
-            prisoner: rotateIfNotFake(puzzle.people.prisoner),
+            guard: rotateIfNotNull(puzzle.people.guard),
+            prisoner: rotateIfNotNull(puzzle.people.prisoner),
         },
         room: {
             width,
             height,
             rotation: 0,
-            exit: rotateIfNotFake(puzzle.room.exit),
+            exit: rotateIfNotNull(puzzle.room.exit),
             walls: rotatedWalls,
         },
     };
@@ -114,12 +124,11 @@ export function isPuzzleSubsetOfAnother(puzzle: Puzzle, other: Puzzle): boolean 
         return false;
     }
 
-    const equalOrFake = (a: Tile, b: Tile): boolean => equal(a, [-1, -1]) || equal(a, b);
-
     if (
-        !equalOrFake(puzzle.people.guard, other.people.guard) ||
-        !equalOrFake(puzzle.people.prisoner, other.people.prisoner) ||
-        !equalOrFake(puzzle.room.exit, other.room.exit)
+        (puzzle.people.guard !== null && !equal(puzzle.people.guard, other.people.guard)) ||
+        (puzzle.people.prisoner !== null &&
+            !equal(puzzle.people.prisoner, other.people.prisoner)) ||
+        (puzzle.room.exit !== null && !equal(puzzle.room.exit, other.room.exit))
     ) {
         return false;
     }
