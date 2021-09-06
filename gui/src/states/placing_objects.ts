@@ -34,7 +34,13 @@ export class PlacingObjectsState {
         const solveButton = document.getElementById("solve-button")!;
         solveButton.onclick = () => {
             this.board.solve().then(solution => {
-                switchState(new ShowingSolutionState(this.board, this.painter, solution));
+                if (solution) {
+                    switchState(new ShowingSolutionState(this.board, this.painter, solution));
+                } else {
+                    const solveButton = document.getElementById("solve-button")!;
+                    solveButton.innerText = "Couldn't find a solution.";
+                    solveButton.setAttribute("disabled", "");
+                }
             });
         };
 
