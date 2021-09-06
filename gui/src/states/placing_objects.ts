@@ -59,7 +59,11 @@ export class PlacingObjectsState {
                 if (this.board.wallExists(wall)) {
                     this.board.removeWall(wall);
                 } else {
-                    this.board.addWall(wall);
+                    const xDistance = Math.abs(wall[0][0] - wall[1][0]);
+                    const yDistance = Math.abs(wall[0][1] - wall[1][1]);
+                    if (xDistance + yDistance === 1) {
+                        this.board.addWall(wall);
+                    }
                 }
             }
         } else {
