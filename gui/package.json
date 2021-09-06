@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack serve",
-    "build": "WEBPACK_ENV=production webpack",
+    "build": "webpack --mode=production",
     "prettier": "prettier --write src/"
   },
   "devDependencies": {
