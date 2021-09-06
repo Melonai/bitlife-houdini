@@ -24,24 +24,24 @@ export class PlacingObjectsState {
 
     constructor(board: Board) {
         const canvas = <HTMLCanvasElement>document.getElementById("board");
-        canvas.addEventListener("click", e => this.onCanvasClick(e));
-
-        // TODO: Remove event listeners when state is changed.
-        document.addEventListener("keyup", e => {
-            e.preventDefault();
-            if (e.key === "Enter") {
-                this.onEnter();
-            }
-        });
+        canvas.onclick = e => this.onCanvasClick(e);
 
         const exportButton = document.getElementById("export-puzzle-button")!;
-        exportButton.addEventListener("click", () => {
+        exportButton.onclick = () => {
             this.exportPuzzle();
-        });
+        };
+
+        const solveButton = document.getElementById("solve-button")!;
+        solveButton.onclick = () => {
+            this.board.solve().then(solution => {
+                switchState(new ShowingSolutionState(this.board, this.painter, solution));
+            });
+        };
 
         this.painter = new Painter(canvas, board.width, board.height);
-        this.painter.paint(null, board);
         this.board = board;
+
+        this.onBoardUpdate();
     }
 
     private onCanvasClick(event: MouseEvent) {
@@ -62,12 +62,24 @@ export class PlacingObjectsState {
                     this.board.addWall(wall);
                 }
             }
-
-            this.narrowApplicableExistingPuzzles(puzzles);
         } else {
             this.selectedTile = clickedTile;
         }
 
+        this.onBoardUpdate();
+    }
+
+    private onBoardUpdate() {
+        const solveButton = document.getElementById("solve-button")!;
+        if (this.board.isComplete()) {
+            solveButton.innerText = "Solve";
+            solveButton.removeAttribute("disabled");
+        } else {
+            solveButton.innerText = "Complete board to solve.";
+            solveButton.setAttribute("disabled", "");
+        }
+
+        this.narrowApplicableExistingPuzzles(puzzles);
         this.painter.paint(this.selectedTile, this.board);
     }
 
@@ -90,28 +102,21 @@ export class PlacingObjectsState {
             }
         }
 
-        const messageBox = document.getElementById("found-existing-puzzle-message")!;
         const button = document.getElementById("found-existing-puzzle-button")!;
 
         if (applicableExistingPuzzles.length === 1) {
+            button.removeAttribute("disabled");
+            button.innerText = "Apply existing puzzle";
             const foundPuzzle = applicableExistingPuzzles[0];
 
-            messageBox.classList.remove("hidden");
             button.onclick = () => {
-                messageBox.classList.add("hidden");
-
                 this.board = puzzleToBoard(foundPuzzle);
-                this.painter.paint(this.selectedTile, this.board);
+                this.onBoardUpdate();
             };
         } else {
-            messageBox.classList.add("hidden");
+            button.innerText = `${applicableExistingPuzzles.length} puzzles found.`;
+            button.setAttribute("disabled", "");
         }
-    }
-
-    private onEnter() {
-        this.board.solve().then(solution => {
-            switchState(new ShowingSolutionState(this.board, this.painter, solution));
-        });
     }
 
     private exportPuzzle() {

@@ -18,14 +18,19 @@
             </label>
             <button type="submit">Create Board</button>
         </form>
-        <div class="placing-objects showing-solution container center-content" id="board-holder">
-            <canvas id="board"></canvas>
-            <button id="export-puzzle-button">
-                Export Puzzle To Clipboard
-            </button>
-            <div id="found-existing-puzzle-message" class="hidden">
-                <p>Found existing puzzle with matching layout.</p>
-                <button id="found-existing-puzzle-button">Apply to current board</button>
+        <div class="placing-objects showing-solution board-view">
+            <div class="container board-holder">
+                <canvas id="board"></canvas>
+            </div>
+            <div class="button-drawer">
+                <button class="placing-objects" id="solve-button" disabled>Solve</button>
+                <button class="placing-objects" id="found-existing-puzzle-button" disabled></button>
+                <div class="showing-solution solve-playback-holder">
+                    <button id="solve-playback-back"><</button>
+                    <div id="solve-playback-info">0/0</div>
+                    <button id="solve-playback-advance">></button>
+                </div>
+                <button id="export-puzzle-button">Copy Puzzle</button>
             </div>
         </div>
     </div>

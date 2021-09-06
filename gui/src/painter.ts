@@ -36,7 +36,7 @@ export class Painter {
         this.context.fillStyle = "rgb(255, 255, 255)";
         this.context.fillRect(0, 0, board.width * TILE_SIZE, board.height * TILE_SIZE);
 
-        this.context.fillStyle = "rgb(236, 236, 236)";
+        this.context.fillStyle = "rgb(215, 219, 233)";
 
         for (let x = 0; x < board.width; x += 2) {
             for (let y = 0; y < board.height; y++) {
@@ -50,7 +50,7 @@ export class Painter {
     }
 
     paintWalls(walls: Wall[]) {
-        this.context.strokeStyle = "rgb(210, 210, 206)";
+        this.context.strokeStyle = "rgb(75, 75, 100)";
 
         for (let wall of walls) {
             let wallCorners: [[number, number], [number, number]];
@@ -96,10 +96,10 @@ export class Painter {
 
             switch (specialTile[1]) {
                 case TileType.Prisoner:
-                    this.paintPerson(x + 25, y + 25, "rgb(255, 145, 111)");
+                    this.paintPerson(x + 25, y + 25, "rgb(255, 115, 60)");
                     break;
                 case TileType.Guard:
-                    this.paintPerson(x + 25, y + 25, "rgb(111, 160, 255)");
+                    this.paintPerson(x + 25, y + 25, "rgb(115, 60, 255)");
                     break;
                 case TileType.Exit:
                     this.context.fillStyle = "rgba(255, 145, 111, 0.25)";
@@ -121,12 +121,7 @@ export class Painter {
         ];
 
         for (let tile of highlightedTiles) {
-            if (
-                tile[0] >= 0 &&
-                tile[0] < board.width &&
-                tile[1] >= 0 &&
-                tile[1] < board.height
-            ) {
+            if (tile[0] >= 0 && tile[0] < board.width && tile[1] >= 0 && tile[1] < board.height) {
                 this.context.lineWidth = 6;
                 if ((tile[0] + tile[1]) % 2 == 0) {
                     this.context.strokeStyle = "rgb(255, 255, 255)";

@@ -1,6 +1,6 @@
 import { TILE_SIZE } from "./painter";
 import { boardToPuzzle } from "./puzzle";
-import { SpecialTiles } from "./special_tiles";
+import { SpecialTiles, TileType } from "./special_tiles";
 import { equal } from "./utils";
 import { Wall } from "./wall";
 
@@ -21,6 +21,14 @@ export class Board {
         this.height = height;
         this.walls = walls;
         this.specialTiles = specialTiles;
+    }
+
+    isComplete(): boolean {
+        const guard = this.specialTiles.findTileOfType(TileType.Guard);
+        const prisoner = this.specialTiles.findTileOfType(TileType.Prisoner);
+        const exit = this.specialTiles.findTileOfType(TileType.Exit);
+
+        return !!(guard && prisoner && exit);
     }
 
     wallExists(wallToFind: Wall): boolean {

@@ -5,7 +5,7 @@ import { ShowingSolutionState } from "./states/showing_solution";
 export enum StateType {
     InitializingBoard = "initializing-board",
     PlacingObjects = "placing-objects",
-    ShowingSolution = "showing-solution"
+    ShowingSolution = "showing-solution",
 }
 
 export type State = InitializingBoardState | PlacingObjectsState | ShowingSolutionState;
@@ -17,19 +17,42 @@ export function getState(): State {
 }
 
 export function switchState(newState: State) {
-    const stateType = newState.type;
-
     const app = document.getElementsByClassName("app")[0]!;
-    const stateElements = Array.from(app.children)
+    switchElementToState(app, newState);
+    state = newState;
+}
 
-    // Show elements of new state and hide elements of old state
-    for (const element of stateElements) {
-        if(element.classList.contains(stateType)) {
-            element.classList.remove("hidden");
-        } else {
-            element.classList.add("hidden");
+// Show elements of new state and hide elements of old state, recursively.
+function switchElementToState(element: Element, state: State) {
+    const states = [
+        StateType.InitializingBoard,
+        StateType.PlacingObjects,
+        StateType.ShowingSolution,
+    ];
+
+    let hasToBeShown = false;
+    let hasToBeHidden = false;
+
+    for (const stateType of states) {
+        if (element.classList.contains(stateType)) {
+            if (stateType === state.type) {
+                hasToBeShown = true;
+                hasToBeHidden = false;
+                break;
+            } else {
+                hasToBeHidden = true;
+            }
         }
     }
 
-    state = newState;
+    if (hasToBeShown) {
+        element.classList.remove("hidden");
+    }
+    if (hasToBeHidden) {
+        element.classList.add("hidden");
+    } else {
+        for (const child of Array.from(element.children)) {
+            switchElementToState(child, state);
+        }
+    }
 }

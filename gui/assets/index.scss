@@ -1,3 +1,5 @@
+// General
+
 html,
 body {
     width: 100%;
@@ -6,7 +8,35 @@ body {
 }
 
 body {
-    background-color: #d2d2ce;
+    background-color: #d7dbe9;
+}
+
+.app {
+    height: 100%;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+button {
+    color: #4b4b64;
+    background-color: #ffffff;
+    border-radius: 10px;
+    width: 100%;
+    border: none;
+    height: 50px;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+// Utils
+
+.hidden {
+    display: none !important;
 }
 
 .center-content {
@@ -15,26 +45,64 @@ body {
     align-items: center;
 }
 
-.hidden {
-    display: none !important;
-}
-
-.app {
-    height: 100%;
-    width: 100%;
-}
+// Layout Components
 
 .container {
     background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 10px 0 0 rgba(236, 236, 236, 1);
-
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
 }
 
+// State-dependent
+
+.board-view {
+    display: flex;
+    flex-direction: column;
+}
+
 #board {
     margin: 50px;
+}
+
+.button-drawer {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    button {
+        margin-bottom: 10px;
+    }
+}
+
+@media (min-width: 768px) {
+    .board-view {
+        flex-direction: row;
+    }
+
+    .button-drawer {
+        width: 200px;
+        margin-top: 0px;
+        margin-left: 10px;
+    }
+}
+
+.solve-playback-holder {
+    display: flex;
+    button {
+        width: 50px;
+    }
+}
+
+#solve-playback-info {
+    height: 50px;
+    flex-grow: 1;
+    background-color: #ffffff;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 10px;
 }
